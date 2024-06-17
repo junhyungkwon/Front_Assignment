@@ -1,0 +1,15 @@
+body{
+    margin: 0;
+    background-color: #FD9891;
+}
+.App{
+    justify-content: center;
+    display: flex;
+}
+.dsd{
+    display: flex;
+}
+.Column-title{
+    text-align: center;
+    margin-bottom: 5%;
+}
