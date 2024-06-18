@@ -29,15 +29,13 @@ function App() {
     (itemId) => {
       setSelectedItems((prevSelectedItems) => {
         if (prevSelectedItems.includes(itemId)) {
-          // 이미 선택된 아이템인 경우 제거
           return prevSelectedItems.filter((id) => id !== itemId);
         } else {
-          // 새로 선택된 아이템인 경우 추가
           return [...prevSelectedItems, itemId];
         }
       });
     },
-    [] // 이 부분은 데이터 의존성이 없으므로 빈 배열로 처리합니다.
+    [] 
   );
 
   const onDragEnd = useCallback(
@@ -113,7 +111,6 @@ function App() {
         }));
       }
   
-      // 드래그 앤 드롭 완료 후 선택된 아이템 초기화
       setSelectedItems([]);
     },
     [data]
@@ -128,19 +125,21 @@ function App() {
     }}
     onDragUpdate={(update) => {
       const { draggableId } = update;
-      setSelectedItems([draggableId]); // 드래그 중에도 선택된 아이템 업데이트
+      setSelectedItems([draggableId]);
     }}
     onDragEnd={onDragEnd}
   >
       <div>
+        
         <div className='Column-item'>
+          <div></div>
           {Object.entries(data.columns).map(([columnId, column]) => (
             <Column
               key={columnId}
               columnId={columnId}
               items={column.items}
               selectedItems={selectedItems}
-              toggleSelection={toggleSelection} // toggleSelection 전달
+              toggleSelection={toggleSelection} 
             />
           ))}
         </div>
