@@ -12,7 +12,6 @@ const Column = ({ columnId, items }) => {
   };
 
   return (
-    
     <Droppable droppableId={columnId}>
       {(provided, snapshot) => (
         <div
@@ -26,14 +25,11 @@ const Column = ({ columnId, items }) => {
             margin: 8
           }}
         >
-           <div className='Column-title'>{columnTitles[columnId]}</div> 
-          
+          <div className='Column-title'>{columnTitles[columnId]}</div>
           {items.map((item, index) => (
             <Item key={item.id} item={item} index={index} />
-            
           ))}
           {provided.placeholder}
-          
         </div>
       )}
     </Droppable>

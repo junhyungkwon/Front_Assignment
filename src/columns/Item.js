@@ -27,4 +27,3 @@ const Item = ({ item, index }) => {
 };
 
 export default Item;
-

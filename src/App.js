@@ -3,28 +3,29 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Column from './columns/Columns'; 
 import './styles/App.css'
 
+const createItems = (columnId) => (
+  Array.from({ length: 6 }, (v, k) => ({
+    id: `${columnId}-item${k + 1}`,
+    content: `Item ${k + 1}`
+  }))
+);
+
 const initialData = {
   columns: {
-    'item1': { id: 'item1', items: Array.from({ length: 4 }, (v, k) => ({ id: `item${k}`, content: `items${k + 1}` })) },
-    'item2': { id: 'item2', items: [] },
-    'item3': { id: 'item3', items: [] },
-    'item4': { id: 'item4', items: [] }
+    'item1': { id: 'item1', items: createItems('item1') },
+    'item2': { id: 'item2', items: createItems('item2') },
+    'item3': { id: 'item3', items: createItems('item3') },
+    'item4': { id: 'item4', items: createItems('item4') }
   }
 };
 
 function App() {
   const [data, setData] = useState(initialData);
-  const [selectedItems, setSelectedItems] = useState([]);
 
   const onDragEnd = useCallback(
     (result) => {
       const { source, destination } = result;
       if (!destination) {
-        return;
-      }
-
-      if (source.droppableId === 'item1' && destination.droppableId === 'item3') {
-        alert("이동할 수 없습니다.");
         return;
       }
 
@@ -70,28 +71,16 @@ function App() {
     [data]
   );
 
-  const toggleSelection = (itemId) => {
-    setSelectedItems((prevSelectedItems) =>
-      prevSelectedItems.includes(itemId)
-        ? prevSelectedItems.filter((id) => id !== itemId)
-        : [...prevSelectedItems, itemId]
-    );
-  };
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className='App' style={{ display: 'flex' }}>
-        <div className='dsd'>
         {Object.entries(data.columns).map(([columnId, column]) => (
           <Column
             key={columnId}
             columnId={columnId}
             items={column.items}
-            selectedItems={selectedItems}
-            toggleSelection={toggleSelection}
           />
         ))}
-        </div>
       </div>
     </DragDropContext>
   );
