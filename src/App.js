@@ -1,10 +1,11 @@
+// App.js
 import React, { useState, useCallback } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import Column from './columns/Columns'; 
-import './styles/App.css'
+import { DragDropContext } from 'react-beautiful-dnd';
+import Column from './columns/Columns';
+import './styles/App.css';
 
 const createItems = (columnId) => (
-  Array.from({ length: 4 }, (v, k) => ({
+  Array.from({ length: 8 }, (v, k) => ({
     id: `${columnId}-item${k + 1}`,
     content: `Item ${k + 1}`
   }))
@@ -21,6 +22,23 @@ const initialData = {
 
 function App() {
   const [data, setData] = useState(initialData);
+  const [selectedItems, setSelectedItems] = useState([]);
+  console.log(selectedItems, 'test')
+  
+  const toggleSelection = useCallback(
+    (itemId) => {
+      setSelectedItems((prevSelectedItems) => {
+        if (prevSelectedItems.includes(itemId)) {
+          // 이미 선택된 아이템인 경우 제거
+          return prevSelectedItems.filter((id) => id !== itemId);
+        } else {
+          // 새로 선택된 아이템인 경우 추가
+          return [...prevSelectedItems, itemId];
+        }
+      });
+    },
+    [] // 이 부분은 데이터 의존성이 없으므로 빈 배열로 처리합니다.
+  );
 
   const onDragEnd = useCallback(
     (result) => {
@@ -28,24 +46,21 @@ function App() {
       if (!destination) {
         return;
       }
-
+  
       const isEven = (id) => parseInt(id.split('-item')[1]) % 2 === 0;
-
-      // 첫 번째 칼럼에서 세 번째 칼럼으로 이동하는 것을 막기
+  
       if (source.droppableId === 'item1' && destination.droppableId === 'item3') {
         alert("첫 번째 칼럼에서 세 번째 칼럼으로는 이동할 수 없습니다.");
         return;
       }
-
+  
       const sourceColumn = data.columns[source.droppableId];
       const destColumn = data.columns[destination.droppableId];
       const sourceItems = Array.from(sourceColumn.items);
       const destItems = Array.from(destColumn.items);
       const [movedItem] = sourceItems.splice(source.index, 1);
-
-      // 짝수 아이템이 짝수 아이템 아래로 이동하는 것을 막기
+  
       if (isEven(movedItem.id)) {
-        // 같은 컬럼 내에서 이동하는 경우
         if (source.droppableId === destination.droppableId) {
           if (destination.index > 0) {
             const prevItem = sourceItems[destination.index - 1];
@@ -54,9 +69,7 @@ function App() {
               return;
             }
           }
-        } 
-        // 다른 컬럼으로 이동하는 경우
-        else {
+        } else {
           if (destination.index > 0) {
             const prevItem = destItems[destination.index - 1];
             if (prevItem && isEven(prevItem.id)) {
@@ -66,7 +79,7 @@ function App() {
           }
         }
       }
-
+  
       if (source.droppableId === destination.droppableId) {
         sourceItems.splice(destination.index, 0, movedItem);
         const newColumn = {
@@ -99,20 +112,38 @@ function App() {
           }
         }));
       }
+  
+      // 드래그 앤 드롭 완료 후 선택된 아이템 초기화
+      setSelectedItems([]);
     },
     [data]
   );
+  
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className='App' style={{ display: 'flex' }}>
-        {Object.entries(data.columns).map(([columnId, column]) => (
-          <Column
-            key={columnId}
-            columnId={columnId}
-            items={column.items}
-          />
-        ))}
+    <DragDropContext
+    onDragStart={(start) => {
+      const { source, draggableId } = start;
+      setSelectedItems([draggableId]);
+    }}
+    onDragUpdate={(update) => {
+      const { draggableId } = update;
+      setSelectedItems([draggableId]); // 드래그 중에도 선택된 아이템 업데이트
+    }}
+    onDragEnd={onDragEnd}
+  >
+      <div>
+        <div className='Column-item'>
+          {Object.entries(data.columns).map(([columnId, column]) => (
+            <Column
+              key={columnId}
+              columnId={columnId}
+              items={column.items}
+              selectedItems={selectedItems}
+              toggleSelection={toggleSelection} // toggleSelection 전달
+            />
+          ))}
+        </div>
       </div>
     </DragDropContext>
   );
