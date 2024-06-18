@@ -4,7 +4,7 @@ import Column from './columns/Columns';
 import './styles/App.css'
 
 const createItems = (columnId) => (
-  Array.from({ length: 6 }, (v, k) => ({
+  Array.from({ length: 4 }, (v, k) => ({
     id: `${columnId}-item${k + 1}`,
     content: `Item ${k + 1}`
   }))
@@ -29,11 +29,43 @@ function App() {
         return;
       }
 
+      const isEven = (id) => parseInt(id.split('-item')[1]) % 2 === 0;
+
+      // 첫 번째 칼럼에서 세 번째 칼럼으로 이동하는 것을 막기
+      if (source.droppableId === 'item1' && destination.droppableId === 'item3') {
+        alert("첫 번째 칼럼에서 세 번째 칼럼으로는 이동할 수 없습니다.");
+        return;
+      }
+
       const sourceColumn = data.columns[source.droppableId];
       const destColumn = data.columns[destination.droppableId];
       const sourceItems = Array.from(sourceColumn.items);
       const destItems = Array.from(destColumn.items);
       const [movedItem] = sourceItems.splice(source.index, 1);
+
+      // 짝수 아이템이 짝수 아이템 아래로 이동하는 것을 막기
+      if (isEven(movedItem.id)) {
+        // 같은 컬럼 내에서 이동하는 경우
+        if (source.droppableId === destination.droppableId) {
+          if (destination.index > 0) {
+            const prevItem = sourceItems[destination.index - 1];
+            if (prevItem && isEven(prevItem.id)) {
+              alert("짝수 아이템은 다른 짝수 아이템 아래로 이동할 수 없습니다.");
+              return;
+            }
+          }
+        } 
+        // 다른 컬럼으로 이동하는 경우
+        else {
+          if (destination.index > 0) {
+            const prevItem = destItems[destination.index - 1];
+            if (prevItem && isEven(prevItem.id)) {
+              alert("짝수 아이템은 다른 짝수 아이템 아래로 이동할 수 없습니다.");
+              return;
+            }
+          }
+        }
+      }
 
       if (source.droppableId === destination.droppableId) {
         sourceItems.splice(destination.index, 0, movedItem);

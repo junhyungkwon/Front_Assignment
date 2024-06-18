@@ -3,7 +3,6 @@ import { Droppable } from 'react-beautiful-dnd';
 import Item from './Item';
 
 const Column = ({ columnId, items }) => {
-
   const columnTitles = {
     item1: 'Column 1',
     item2: 'Column 2',

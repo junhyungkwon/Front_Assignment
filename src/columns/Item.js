@@ -14,7 +14,7 @@ const Item = ({ item, index }) => {
             padding: 16,
             margin: '0 0 8px 0',
             minHeight: '50px',
-            backgroundColor: snapshot.isDragging ? 'lightgreen' : 'grey',
+            backgroundColor: snapshot.isDragging ? 'lightcoral' : 'grey',
             color: 'white',
             ...provided.draggableProps.style
           }}
